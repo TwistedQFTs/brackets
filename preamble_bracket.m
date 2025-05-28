@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Setup*)
 
 
@@ -22,7 +22,7 @@ Fermion@@fermionFields;
 Boson@@bosonFields;
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*derivative*)
 
 
@@ -47,7 +47,7 @@ d[n1_,n2_,n3_][HoldPattern[NonCommutativeMultiply[x_,y__]]]:=Sum[Binomial[n1,k1]
 
 
 (* ::Input::Initialization:: *)
-d[n__][Times[c1,x___]]:=c1 d[n][Times[x]];
+(*d[n__][Times[c1,x___]]:=c1 d[n][Times[x]];
 d[n__][Times[c2,x___]]:=c2 d[n][Times[x]];
 d[n__][Times[c3,x___]]:=c3 d[n][Times[x]];
 d[n__][Times[c4,x___]]:=c4 d[n][Times[x]];
@@ -59,11 +59,11 @@ d[n__][Times[c9,x___]]:=c9 d[n][Times[x]];
 d[n__][Times[c10,x___]]:=c10 d[n][Times[x]];
 d[n__][Times[c11,x___]]:=c11 d[n][Times[x]];
 d[n__][Times[c12,x___]]:=c12 d[n][Times[x]];
-d[n__][Times[c13,x___]]:=c13 d[n][Times[x]];
+d[n__][Times[c13,x___]]:=c13 d[n][Times[x]];*)
 d[n__][Times[\[Zeta],x___]]:=\[Zeta] d[n][Times[x]];
 d[n__][Times[\[Epsilon],x___]]:=\[Epsilon] d[n][Times[x]]
 
-d[n__][c1]:=0;
+(*d[n__][c1]:=0;
 d[n__][c2]:=0;
 d[n__][c3]:=0;
 d[n__][c4]:=0;
@@ -75,9 +75,16 @@ d[n__][c9]:=0;
 d[n__][c10]:=0;
 d[n__][c11]:=0;
 d[n__][c12]:=0;
-d[n__][c13]:=0;
+d[n__][c13]:=0;*)
 d[n__][\[Zeta]]:=0;
 NumericQ[\[Zeta]]:=True
+
+
+(*ClearAll@@Table[Symbol["c"<>ToString[i]],{i,1,15}];*)
+constants=Table[Symbol["c"<>ToString[i]],{i,1,15}];
+d[n__][Times[cc_,x___]]/;MemberQ[constants,cc]:=cc d[n][Times[x]];
+d[n__][cc_]/;MemberQ[constants,cc]:= 0;
+d[n__][Times[Power[cc_,e_],x___]]/;MemberQ[constants,cc]:=cc^e d[n][Times[x]];
 
 
 d[n__][\[Mu][i_]^_.]:=0
@@ -190,6 +197,9 @@ FullForm]\)}
 (* ::Input::Initialization:: *)
 wick2[exp_]:=wick[exp,{1,2}];
 wick3[exp_]:=wick[wick[wick[exp,{1,2}],{1,3}],{2,3}];
+wick4[exp_]:=exp//wick[#,{1,3}]&//wick[#,{1,4}]&//wick[#,{2,3}]&//wick[#,{2,4}]&//wick[#,{3,4}]&
+wick5tri[exp_]:=exp//wick[#,{1,5}]&//wick[#,{2,5}]&//wick[#,{2,4}]&//wick[#,{3,4}]&//wick[#,{3,5}]&//wick[#,{1,3}]&//wick[#,{4,5}]&
+wick5Kite[exp_]:=exp//wick[#,{1,5}]&//wick[#,{2,5}]&//wick[#,{2,3}]&//wick[#,{3,4}]&//wick[#,{1,4}]&//wick[#,{2,4}]&//wick[#,{3,5}]&
 
 
 (* ::Subsection:: *)
@@ -200,81 +210,142 @@ wick3[exp_]:=wick[wick[wick[exp,{1,2}],{1,3}],{2,3}];
 (*I\[CapitalDelta]*)
 
 
-(* ::Input:: *)
-(*(**)
-(*wedge[A_,B_]:=A[1]B[2]-A[2]B[1]*)
-(*dot[A_,B_]:=A[1]B[1]+A[2]B[2]*)
-(*Isegment = Exp[-dot[\[Lambda][1],z[1->2]]];*)
-(*pregenerate2[dz12_]:=pregenerate2[dz12]=SeriesCoefficient[*)
-(*D[Isegment,{z[1->2][1],dz12[[1]]},{z[1->2][2],dz12[[2]]}]*)
-(*,{z[1->2][1],0,0},{z[1->2][2],0,0}];*)
-(*dzList = Tuples[{0,1,2,3,4,5,6,7,8},2];*)
-(*Do[Print[dz12];DI\[CapitalDelta][dz12]=pregenerate2[dz12],{dz12,dzList}];*)
+(*wedge[A_,B_]:=A[1]B[2]-A[2]B[1]
+dot[A_,B_]:=A[1]B[1]+A[2]B[2]*)
+
+
+(*Isegment = Exp[-dot[\[Lambda][1],z[1->2]]];
+pregenerate2[dz12_]:=pregenerate2[dz12]=SeriesCoefficient[
+D[Isegment,{z[1->2][1],dz12[[1]]},{z[1->2][2],dz12[[2]]}]
+,{z[1->2][1],0,0},{z[1->2][2],0,0}];
+dzList = Tuples[{0,1,2,3,4,5,6,7,8},2];
+Do[Print[dz12];DI\[CapitalDelta][dz12]=pregenerate2[dz12],{dz12,dzList}];*)
 (*Save[FileNameJoin[{NotebookDirectory[],"DI\[CapitalDelta]datahh.nb"}],DI\[CapitalDelta]]*)
-(**)*)
-(**)
-(*(*A1 = (z[1->2][1]+z[2->3][1]+z[3->1][1]) \[Lambda][1][1]+(z[1->2][2]+z[2->3][2]+z[3->1][2]) \[Lambda][1][2];*)
-(*A2 = (z[1->2][1]+z[2->3][1]+z[3->1][1]) \[Lambda][2][1]+(z[1->2][2]+z[2->3][2]+z[3->1][2]) \[Lambda][2][2];*)
-(*A3 = (z[1->2][1]+z[2->3][1]+z[3->1][1]) \[Lambda][3][1]+(z[1->2][2]+z[2->3][2]+z[3->1][2]) \[Lambda][3][2];*)
-(*Itriangle = (-\[Pi]^-2)(wedge[\[Lambda][2],\[Lambda][3]]/(A2 A3)Exp[dot[z[1->2], \[Lambda][2]]+dot[z[1->3], \[Lambda][3]]]+wedge[\[Lambda][3],\[Lambda][1]]/(A3 A1)Exp[-dot[z[1->2], \[Lambda][1]]+dot[z[2->3], \[Lambda][3]]]+wedge[\[Lambda][1],\[Lambda][2]]/(A1 A2)Exp[-dot[z[1->3], \[Lambda][1]]-dot[z[2->3], \[Lambda][2]]])/.{z[3->1][i_]:>-z[1->3][i]}/.{\[Lambda][3][i_]:>-(\[Lambda][1][i]+\[Lambda][2][i])};*)*)
-(*(*ClearAll[A1,A2,A3]*)*)
 
 
-(* ::Input:: *)
-(*(*SeriesCoefficient[Itriangle*)
-(*,{z[1->2][1],0,0},{z[1->2][2],0,0},{z[2->3][1],0,0},{z[2->3][2],0,0},{z[1->3][1],0,0},{z[1->3][2],0,0}]*)*)
+(*A1 = (z[1->2][1]+z[2->3][1]+z[3->1][1]) \[Lambda][1][1]+(z[1->2][2]+z[2->3][2]+z[3->1][2]) \[Lambda][1][2];
+A2 = (z[1->2][1]+z[2->3][1]+z[3->1][1]) \[Lambda][2][1]+(z[1->2][2]+z[2->3][2]+z[3->1][2]) \[Lambda][2][2];
+A3 = (z[1->2][1]+z[2->3][1]+z[3->1][1]) \[Lambda][3][1]+(z[1->2][2]+z[2->3][2]+z[3->1][2]) \[Lambda][3][2];
+Itriangle = (-\[Pi]^-2)(wedge[\[Lambda][2],\[Lambda][3]]/(A2 A3)Exp[dot[z[1->2], \[Lambda][2]]+dot[z[1->3], \[Lambda][3]]]+wedge[\[Lambda][3],\[Lambda][1]]/(A3 A1)Exp[-dot[z[1->2], \[Lambda][1]]+dot[z[2->3], \[Lambda][3]]]+wedge[\[Lambda][1],\[Lambda][2]]/(A1 A2)Exp[-dot[z[1->3], \[Lambda][1]]-dot[z[2->3], \[Lambda][2]]])/.{z[3->1][i_]:>-z[1->3][i]}/.{\[Lambda][3][i_]:>-(\[Lambda][1][i]+\[Lambda][2][i])};*)
+(*ClearAll[A1,A2,A3]*)
+(*SeriesCoefficient[Itriangle
+,{z[1->2][1],0,0},{z[1->2][2],0,0},{z[2->3][1],0,0},{z[2->3][2],0,0},{z[1->3][1],0,0},{z[1->3][2],0,0}]*)
 
 
-(* ::Input:: *)
-(*(*ClearAll[J]*)
-(*SetDirectory[NotebookDirectory[]]*)
-(*J=<<"./bitriangleAns4.m";*)
-(*Ibitriangle=Exp[*)
-(*-dot[z[1->4], \[Lambda][1]]*)
-(*+ dot[z[1->3], \[Lambda][2]]-dot[z[1->4], \[Lambda][2]]-dot[z[2->3], \[Lambda][2]]*)
-(*+dot[z[1->3], \[Lambda][3]]-dot[z[1->4], \[Lambda][3]]]J/.{tritriCo->1}/.{\[Lambda][v_,i_]:>\[Lambda][v][i]} /.{ZHold[1,i_]:>z[1->3][i]-z[1->4][i]+z[3->4][i],ZHold[2,i_]:>z[1->3][i]-z[1->4][i]-z[2->3][i]+z[2->4][i]} ;*)
-(*ClearAll[J]*)*)
+ClearAll[J]
+SetDirectory[NotebookDirectory[]]
+J=<<"./bitriangleAns4.m";
+Ibitriangle = Exp[
+		- dot[z[1->4], \[Lambda][1]]
+		+ dot[z[1->3], \[Lambda][2]]-dot[z[1->4], \[Lambda][2]]-dot[z[2->3], \[Lambda][2]]
+		+ dot[z[1->3], \[Lambda][3]]-dot[z[1->4], \[Lambda][3]]]J /.{Wedge[\[Lambda][v1_], \[Lambda][v2_]]:>\[Lambda][v1,1]\[Lambda][v2,2]-\[Lambda][v1,2]\[Lambda][v2,1],dot[a_, b_]:>a[1]b[1]+a[2]b[2]}/.{tritriCo->1}/.{\[Lambda][v_,i_]:>\[Lambda][v][i]} /.{ZHold[1,i_] :> z[1->3][i]-z[1->4][i]+z[3->4][i], ZHold[2,i_] :> z[1->3][i] - z[1->4][i] - z[2->3][i] + z[2->4][i]} ;
+ClearAll[J]
 
 
-(* ::Input:: *)
-(**)
+SetDirectory[NotebookDirectory[]];
+TriGuiJ0SU2 = Import["../../three loops/data/TritriangleGuiJ0SU2.mx"]/.{Wedge[\[Lambda][v1_], \[Lambda][v2_]]:>\[Lambda][v1,1]\[Lambda][v2,2]-\[Lambda][v1,2]\[Lambda][v2,1],dot[a_, b_]:>a[1]b[1]+a[2]b[2]}/.{ZHold[v_][i_]:>ZHold[v,i],\[Lambda][v_][i_]:>\[Lambda][v,i]};
+TriGuiJ1SU2 = Import["../../three loops/data/TritriangleGuiJ1SU2.mx"]/.{Wedge[\[Lambda][v1_], \[Lambda][v2_]]:>\[Lambda][v1,1]\[Lambda][v2,2]-\[Lambda][v1,2]\[Lambda][v2,1],dot[a_, b_]:>a[1]b[1]+a[2]b[2]}/.{ZHold[v_][i_]:>ZHold[v,i],\[Lambda][v_][i_]:>\[Lambda][v,i]};
+TriGuiJ2SU2 = Import["../../three loops/data/TritriangleGuiJ2SU2.mx"]/.{Wedge[\[Lambda][v1_], \[Lambda][v2_]]:>\[Lambda][v1,1]\[Lambda][v2,2]-\[Lambda][v1,2]\[Lambda][v2,1],dot[a_, b_]:>a[1]b[1]+a[2]b[2]}/.{ZHold[v_][i_]:>ZHold[v,i],\[Lambda][v_][i_]:>\[Lambda][v,i]};
 
 
-(* ::Subsubsection:: *)
+prefactor = Exp[dot[z[1->3],\[Lambda][3]]+dot[z[1->3],\[Lambda][4]]-dot[z[1->5],\[Lambda][1]]-dot[z[1->5],\[Lambda][3]]-dot[z[1->5],\[Lambda][4]]-dot[z[2->5],\[Lambda][2]]+dot[z[3->4],\[Lambda][4]]]/.{dot[a_, b_]:>a[1]b[1]+a[2]b[2]};
+Itritriangle = prefactor(TriGuiJ0SU2+TriGuiJ1SU2+TriGuiJ2SU2)/.{tritriCo->1}/.{\[Lambda][v_,i_]:>\[Lambda][v][i]}/.{ZHold[1,i_]:>z[1->3][i]-z[1->5][i]+z[3->4][i]+z[4->5][i], ZHold[2,i_]:> z[1->3][i]-z[1->5][i]+z[3->5][i], ZHold[3,i_]:> -z[1->3][i]+z[1->5][i]+z[2->4][i]-z[2->5][i]-z[3->4][i]};
+
+
+(*SetDirectory[NotebookDirectory[]];
+KiteOrder012 = Import["../../three loops/data/KiteOrder012.mx"]/.tritriCo->1;
+Exp[dot[z[1\[Rule]4],\[Lambda][2]]+dot[z[1\[Rule]4],\[Lambda][3]]+dot[z[1\[Rule]4],\[Lambda][4]]-dot[z[1\[Rule]5],\[Lambda][1]]-dot[z[1\[Rule]5],\[Lambda][2]]-dot[z[1\[Rule]5],\[Lambda][3]]-dot[z[1\[Rule]5],\[Lambda][4]]-dot[z[2\[Rule]4],\[Lambda][2]]-dot[z[3\[Rule]4],\[Lambda][3]]]KiteOrder012/.{tritriCo->1}/.{\[Lambda][v_,i_]:>\[Lambda][v][i]} *)
+
+
+(* ::Subsection:: *)
 (*pregenerate*)
 
 
-(* ::Input:: *)
-(*(*it turns out the most time consuming process is to calculate derivative of I\[CapitalDelta], so we calculate here first*)*)
-(*(*ClearAll[pregenerate3,pregenerate4]*)
-(*pregenerate3[dz12_,dz13_,dz23_]:=pregenerate3[dz12,dz13,dz23]=SeriesCoefficient[*)
-(*D[Itriangle,{z[1->2][1],dz12[[1]]},{z[1->2][2],dz12[[2]]},{z[1->3][1],dz13[[1]]},{z[1->3][2],dz13[[2]]},{z[2->3][1],dz23[[1]]},{z[2->3][2],dz23[[2]]}]*)
-(*,{z[1->2][1],0,0},{z[1->2][2],0,0},{z[2->3][1],0,0},{z[2->3][2],0,0},{z[1->3][1],0,0},{z[1->3][2],0,0}];*)
-(*pregenerate4[dz14_,dz13_,dz23_,dz24_,dz34_]:=pregenerate4[dz14,dz13,dz23,dz24,dz34]=*)
-(*(D[Ibitriangle,*)
-(*{z[1->4][1],dz14[[1]]},{z[1->4][2],dz14[[2]]},*)
-(*{z[1->3][1],dz13[[1]]},{z[1->3][2],dz13[[2]]},*)
-(*{z[2->3][1],dz23[[1]]},{z[2->3][2],dz23[[2]]},*)
-(*{z[2->4][1],dz24[[1]]},{z[2->4][2],dz24[[2]]},*)
-(*{z[3->4][1],dz34[[1]]},{z[3->4][2],dz34[[2]]}*)
-(*]/.{z[1->4][i_]->0,z[1->3][i_]:>0,z[2->3][i_]:>0,z[2->4][i_]:>0,z[3->4][i_]:>0});*)
-(*DI\[CapitalDelta][dz14_,dz13_,dz23_,dz24_,dz34_]:=pregenerate4[dz14,dz13,dz23,dz24,dz34];*)*)
-(*(*//SeriesCoefficient[#*)
-(*,{z[1->4][1],0,0},{z[1->4][2],0,0},{z[2->3][1],0,0},{z[2->3][2],0,0},{z[1->3][1],0,0},{z[1->3][2],0,0},{z[2->4][1],0,0},{z[2->4][2],0,0},{z[3->4][1],0,0},{z[3->4][2],0,0}]&*)*)
-(**)
-(*(**)
-(*ClearAll[DI\[CapitalDelta]];*)
-(*dzList = Tuples[{0,1},2];*)
-(*Do[Print[dz12,dz13,dz23];DI\[CapitalDelta][dz12,dz13,dz23]=pregenerate[dz12,dz13,dz23],{dz12,dzList},{dz13,dzList},{dz23,dzList}];*)
+(* ::Subsubsection:: *)
+(*triangle*)
+
+
+(* ::Input::Initialization:: *)
+(*it turns out the most time consuming process is to calculate derivative of I\[CapitalDelta], so we calculate here first*)
+(*ClearAll[pregenerate3,pregenerate4]
+pregenerate3[dz12_,dz13_,dz23_]:=pregenerate3[dz12,dz13,dz23]=SeriesCoefficient[
+D[Itriangle,{z[1->2][1],dz12[[1]]},{z[1->2][2],dz12[[2]]},{z[1->3][1],dz13[[1]]},{z[1->3][2],dz13[[2]]},{z[2->3][1],dz23[[1]]},{z[2->3][2],dz23[[2]]}]
+,{z[1->2][1],0,0},{z[1->2][2],0,0},{z[2->3][1],0,0},{z[2->3][2],0,0},{z[1->3][1],0,0},{z[1->3][2],0,0}];*)
+
+(*ClearAll[DI\[CapitalDelta]];
+dzList = Tuples[{0,1},2];
+Do[Print[dz12,dz13,dz23];DI\[CapitalDelta][dz12,dz13,dz23]=pregenerate[dz12,dz13,dz23],{dz12,dzList},{dz13,dzList},{dz23,dzList}];*)
 (*Save[FileNameJoin[{NotebookDirectory[],"DI\[CapitalDelta]data.nb"}],DI\[CapitalDelta]]*)
-(**)*)
+
+
+(* ::Subsubsection:: *)
+(*bi-triangle*)
+
+
+pregenerate4[dz14_,dz13_,dz23_,dz24_,dz34_]:=pregenerate4[dz14,dz13,dz23,dz24,dz34]=
+		(D[Ibitriangle,
+		{z[1->4][1],dz14[[1]]},{z[1->4][2],dz14[[2]]},
+		{z[1->3][1],dz13[[1]]},{z[1->3][2],dz13[[2]]},
+		{z[2->3][1],dz23[[1]]},{z[2->3][2],dz23[[2]]},
+		{z[2->4][1],dz24[[1]]},{z[2->4][2],dz24[[2]]},
+		{z[3->4][1],dz34[[1]]},{z[3->4][2],dz34[[2]]}
+		]/.{z[1->4][i_]->0,z[1->3][i_]:>0,z[2->3][i_]:>0,z[2->4][i_]:>0,z[3->4][i_]:>0});
+
+DI\[CapitalDelta][dz14_, dz13_, dz23_, dz24_, dz34_] := Module[{result},
+  Print["start computing DI bi-triangle"];
+  result = pregenerate4[dz14, dz13, dz23, dz24, dz34];
+  Print["calculated (", dz14, ",", dz13, ",", dz23, ",", dz24, ",", dz34, ")"];
+  result
+];
+
+
+(*//SeriesCoefficient[#
+,{z[1->4][1],0,0},{z[1->4][2],0,0},{z[2->3][1],0,0},{z[2->3][2],0,0},{z[1->3][1],0,0},{z[1->3][2],0,0},{z[2->4][1],0,0},{z[2->4][2],0,0},{z[3->4][1],0,0},{z[3->4][2],0,0}]&*)
+
+(*ClearAll[DI\[CapitalDelta]]
+dzList = Tuples[{0,1,2},2];
+Do[Print[dz14,dz13,dz23,dz24,dz34];DI\[CapitalDelta][dz14,dz13,dz23,dz24,dz34]=pregenerate4[dz14,dz13,dz23,dz24,dz34],{dz14,dzList},{dz13,dzList},{dz23,dzList},{dz24,dzList},{dz34,dzList}]
+Save[FileNameJoin[{NotebookDirectory[],"DI\[CapitalDelta]data_temp.nb"}],DI\[CapitalDelta]]*)
+
+
+(* ::Subsubsection:: *)
+(*tri-triangle*)
+
+
+pregenerate5[ dz15_, dz25_, dz13_, dz24_, dz34_, dz35_, dz45_]:=pregenerate5[ dz15, dz25, dz13, dz24, dz34, dz35, dz45]=
+			(D[Itritriangle,
+			{z[1->5][1],dz15[[1]]},{z[1->5][2],dz15[[2]]},
+			{z[2->5][1],dz25[[1]]},{z[2->5][2],dz25[[2]]},
+			{z[1->3][1],dz13[[1]]},{z[1->3][2],dz13[[2]]},
+			{z[2->4][1],dz24[[1]]},{z[2->4][2],dz24[[2]]},
+			{z[3->4][1],dz34[[1]]},{z[3->4][2],dz34[[2]]},
+			{z[3->5][1],dz35[[1]]},{z[3->5][2],dz35[[2]]},
+			{z[4->5][1],dz45[[1]]},{z[4->5][2],dz45[[2]]}
+			]/.{z[1->5][i_]->0, z[2->5][i_]:>0, z[1->3][i_]:>0, z[2->4][i_]:>0, z[3->4][i_]:>0, z[3->5][i_]:>0, z[4->5][i_]:>0});
+DI\[CapitalDelta][dz15_, dz25_, dz13_, dz24_, dz34_, dz35_, dz45_]:=pregenerate5[dz15, dz25, dz13, dz24, dz34, dz35, dz45];
+
+
+(*ClearAll[DI\[CapitalDelta]]
+dzList = Tuples[{0}, 2];*)
+
+
+(*Do[
+Print[dz15, dz25, dz13, dz24, dz34, dz35, dz45];
+DI\[CapitalDelta][dz15, dz25, dz13, dz24, dz34, dz35, dz45]=pregenerate5[dz15, dz25, dz13, dz24, dz34, dz35, dz45],
+{dz15,dzList},{dz25,dzList},{dz13,dzList},{dz24,dzList},{dz34,dzList},{dz35,dzList},{dz45,dzList}]
+
+Save[FileNameJoin[{NotebookDirectory[],"DI\[CapitalDelta]data_temp.nb"}], DI\[CapitalDelta]]*)
+
+
+(*DI\[CapitalDelta][{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}]*)
+(*ClearAll[DI\[CapitalDelta]]*)
+
+
+(*Save[FileNameJoin[{NotebookDirectory[],"DI\[CapitalDelta]data_temp.nb"}], DI\[CapitalDelta]]*)
 
 
 (* ::Input:: *)
-(*(*ClearAll[DI\[CapitalDelta]]*)
-(*dzList = Tuples[{0,1,2},2];*)
-(*Do[Print[dz14,dz13,dz23,dz24,dz34];DI\[CapitalDelta][dz14,dz13,dz23,dz24,dz34]=pregenerate4[dz14,dz13,dz23,dz24,dz34],{dz14,dzList},{dz13,dzList},{dz23,dzList},{dz24,dzList},{dz34,dzList}]*)
-(*Save[FileNameJoin[{NotebookDirectory[],"DI\[CapitalDelta]data_temp.nb"}],DI\[CapitalDelta]]*)*)
+(**)
 
 
 (* ::Input:: *)
@@ -286,7 +357,7 @@ wick3[exp_]:=wick[wick[wick[exp,{1,2}],{1,3}],{2,3}];
 (*NotebookClose[DI\[CapitalDelta]dataList]*)*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection:: *)
 (*plugin I\[CapitalGamma]*)
 
 
@@ -340,7 +411,7 @@ end]//GExpand,
 {ni,niList}]
 ]
 
-I\[CapitalGamma]tobracket4[front_,second_,third_,fourth_,dz14_,dz13_,dz23_,dz24_,dz34_]:=Block[{coefRules,coef,nMax,niList},
+I\[CapitalGamma]tobracket4[front_,second_,third_,end_,dz14_,dz13_,dz23_,dz24_,dz34_]:=Block[{coefRules,coef,nMax,niList},
 coefRules =CoefficientRules[(-1)^(dz14[[3]][[2]]+dz13[[3]][[2]]+dz23[[3]][[2]]+dz24[[3]][[2]]+dz34[[3]][[2]]) DI\[CapitalDelta][dz14[[3]][[3]],dz13[[3]][[3]],dz23[[3]][[3]],dz24[[3]][[3]],dz34[[3]][[3]]]
 ,
 {\[Lambda][1][1],\[Lambda][1][2],\[Lambda][2][1],\[Lambda][2][2],\[Lambda][3][1],\[Lambda][3][2]}];
@@ -351,14 +422,33 @@ Sum[coef[ni]NonCommutativeMultiply[
 Nest[d\[Lambda][1][1],Nest[d\[Lambda][1][2],front,ni[[2]]],ni[[1]]]//GExpand,
 Nest[d\[Lambda][2][1],Nest[d\[Lambda][2][2],second,ni[[4]]],ni[[3]]]//GExpand,
 Nest[d\[Lambda][3][1],Nest[d\[Lambda][3][2],third,ni[[6]]],ni[[5]]]//GExpand,
-fourth]//GExpand,
+end]//GExpand,
 {ni,niList}]
 ]
-(*it is very easy to write down a general I\[CapitalGamma]tobracket for any number of entries, but I won't do it for now*)
+
+I\[CapitalGamma]tobracket5[front_,second_,third_,fourth_,end_, dz15_, dz25_, dz13_,dz24_, dz34_, dz35_, dz45_]:=Block[{coefRules,coef,nMax,niList},
+coefRules =CoefficientRules[(-1)^(dz15[[3]][[2]]+dz25[[3]][[2]]+dz13[[3]][[2]]+dz24[[3]][[2]]+dz34[[3]][[2]]+dz35[[3]][[2]]+dz45[[3]][[2]]) DI\[CapitalDelta][dz15[[3]][[3]],dz25[[3]][[3]],dz13[[3]][[3]],dz24[[3]][[3]],dz34[[3]][[3]],dz35[[3]][[3]],dz45[[3]][[3]]]
+,
+{\[Lambda][1][1], \[Lambda][1][2], \[Lambda][2][1], \[Lambda][2][2], \[Lambda][3][1], \[Lambda][3][2], \[Lambda][4][1], \[Lambda][4][2]}];
+
+coef = Association@@coefRules;
+niList = Keys[coef];
+Sum[coef[ni]NonCommutativeMultiply[
+Nest[d\[Lambda][1][1],Nest[d\[Lambda][1][2],front,ni[[2]]],ni[[1]]]//GExpand,
+Nest[d\[Lambda][2][1],Nest[d\[Lambda][2][2],second,ni[[4]]],ni[[3]]]//GExpand,
+Nest[d\[Lambda][3][1],Nest[d\[Lambda][3][2],third,ni[[6]]],ni[[5]]]//GExpand,
+Nest[d\[Lambda][4][1],Nest[d\[Lambda][4][2],third,ni[[8]]],ni[[7]]]//GExpand,
+end]//GExpand,
+{ni,niList}]
+]
+
+
+(*it should be easy to write down a general I\[CapitalGamma]tobracket for any number of entries, but I won't do it for now*)
 ClearAll[pluginI\[CapitalGamma]2,pluginI\[CapitalGamma]3,pluginI\[CapitalGamma]4,product2,product3,product4]
 pluginI\[CapitalGamma]2[exp_] :=exp/.{bracket->I\[CapitalGamma]tobracket2} 
 pluginI\[CapitalGamma]3[exp_] :=exp/.{bracket->I\[CapitalGamma]tobracket3} 
 pluginI\[CapitalGamma]4[exp_] :=exp/.{bracket->I\[CapitalGamma]tobracket4} 
+pluginI\[CapitalGamma]5[exp_] :=exp/.{bracket->I\[CapitalGamma]tobracket5} 
 
 product2[exp_] :=exp/.{bracket[old__]:>I\[CapitalGamma]tobracket2[old,{1,2,{0,0,{0,0}}}]} 
 product3[exp_] :=(exp//wick[#,{1,2}]&//wick[#,{1,3}]&)/.{bracket[old__]:>I\[CapitalGamma]tobracket3[old,{2,3,{0,0,{0,0}}}]} 
